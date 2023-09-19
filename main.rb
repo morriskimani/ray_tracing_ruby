@@ -1,9 +1,42 @@
 require_relative './vec3'
 require_relative './color'
+require_relative './ray'
+
+extend VectorUtils
+
+def ray_color(ray)
+  unit_direction = unit_vector(ray.direction)
+
+  # Calculate the alpha value "a" to be used in linear interpolation: (1-a) 𝚡 start + a 𝚡 end
+  # 0 <= a <= 1
+  a = 0.5 * (unit_direction.y + 1)
+  Color.new(1, 1, 1) * (1 - a) + Color.new(0.5, 0.7, 1.0) * a
+end
 
 # Image
-image_height = 256
-image_width = 256
+aspect_ratio = 16.0 / 9.0
+image_width = 400
+image_height = (image_width / aspect_ratio).to_i
+image_height = image_height < 1 ? 1 : image_height
+
+# Camera
+focal_length = 1.0
+viewport_height = 2.0
+# Note we are not using the aspect ratio value directly,
+# because the actual aspect ratio of the image may be slightly different.
+viewport_width = viewport_height * image_width.to_f / image_height
+camera_center = Point3.new(0, 0, 0)
+
+# Vectors across the horizontal (v) and down (v) the vertical viewport edges
+viewport_u = Vec3.new(viewport_width, 0, 0)
+viewport_v = Vec3.new(0, -viewport_height, 0)
+
+# Pixel delta vectors from pixel to pixel. Vertical and Horizontal
+pixel_delta_u = viewport_u / image_width
+pixel_delta_v = viewport_v / image_height
+
+viewport_upper_left = camera_center - Vec3.new(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2
+pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5
 
 # Render
 File.open('image.ppm', 'w') do |file|
@@ -13,7 +46,11 @@ File.open('image.ppm', 'w') do |file|
     print("\rScanlines remaining:  #{image_height - 1} ")
 
     (0...image_width).each do |col|
-      pixel_color = Color.new(col.to_f / (image_width - 1), row.to_f / (image_height - 1), 0)
+      pixel_center = pixel00_loc + (pixel_delta_u * col) + (pixel_delta_v * row)
+      ray_direction = pixel_center - camera_center
+      ray = Ray.new(camera_center, ray_direction)
+
+      pixel_color = ray_color(ray)
       ColorUtils.write_color(file, pixel_color)
     end
   end
