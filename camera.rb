@@ -18,7 +18,7 @@ class Camera
       file << "P3\n" << @image_width << ' ' << @image_height << "\n255\n"
 
       (0...@image_height).each do |row|
-        print("\rScanlines remaining:  #{@image_height - 1} ")
+        print("\rScanlines remaining:  #{@image_height - row} ")
 
         (0...@image_width).each do |col|
           pixel_center = @pixel00_loc + (@pixel_delta_u * col) + (@pixel_delta_v * row)
