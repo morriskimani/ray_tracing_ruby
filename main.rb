@@ -11,15 +11,15 @@ extend VectorUtils
 # @param [Ray] ray
 def hit_spere(center, radius, ray)
   oc = ray.origin - center
-  a = dot(ray.direction, ray.direction)
-  b = 2.0 * dot(oc, ray.direction)
-  c = dot(oc, oc) - radius * radius
-  discriminant = b * b - 4 * a * c
+  a = ray.direction.length_squared
+  half_b = dot(oc, ray.direction)
+  c = oc.length_squared - radius * radius
+  discriminant = half_b * half_b - a * c
 
   return -1.0 if discriminant.negative?
 
   # NOTE: we are only interested in the closest hit point (thus we are only getting one of the roots of the quadratic equation)
-  (-b - Math.sqrt(discriminant)) / (2.0 * a)
+  (-half_b - Math.sqrt(discriminant)) / a
 end
 
 def ray_color(ray)
