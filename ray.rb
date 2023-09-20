@@ -6,6 +6,6 @@ class Ray
   attr_reader :origin, :direction
 
   def at(t)
-    origin + t * direction
+    origin + direction * t
   end
 end
