@@ -9,7 +9,8 @@ extend VectorUtils
 
 def ray_color(ray, world)
   hit_record = HitRecord.new
-  if world.hit(ray, 0, Float::INFINITY, hit_record) # rubocop:disable Style/IfUnlessModifier
+  ray_t = Interval.new(0, Float::INFINITY)
+  if world.hit(ray, ray_t, hit_record) # rubocop:disable Style/IfUnlessModifier
     return (hit_record.normal + Color.new(1, 1, 1)) * 0.5
   end
 

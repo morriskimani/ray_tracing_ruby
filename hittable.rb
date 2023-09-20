@@ -1,4 +1,5 @@
 require_relative './vec3'
+require_relative './interval'
 
 class HitRecord
   include VectorUtils
@@ -50,7 +51,7 @@ class Sphere < Hittable
     @radius = radius
   end
 
-  def hit(ray, ray_tmin, ray_tmax, hit_record)
+  def hit(ray, ray_t, hit_record)
     oc = ray.origin - @center
     a = ray.direction.length_squared
     half_b = dot(oc, ray.direction)
@@ -63,9 +64,9 @@ class Sphere < Hittable
 
     # find nearest root that lies in the acceptable range
     root = (-half_b - sqrtd) / a
-    if root <= ray_tmin || ray_tmax <= root
+    if !ray_t.surrounds?(root)
       root = (-half_b + sqrtd) / a
-      return false if root <= ray_tmin || ray_tmax <= root
+      return false if !ray_t.surrounds?(root)
     end
 
     hit_record.t = root
