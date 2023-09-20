@@ -2,6 +2,33 @@ require_relative './vec3'
 
 HitRecord = Struct.new('HitRecord', p, normal, t)
 
+class HitRecord
+  def initialize
+    # the Ray vector. That is P(t) = A + tb, where the variable t is known and substituted in.
+    @p = nil
+
+    # value at which the ray function hits the hittable object/surface. That is, the t in P(t) = A + tb
+    @t = nil
+
+    # Normal Vector passing through the intersection point of the ray and the object
+    @normal = nil
+
+    # True if ray is hitting object from the front side.
+    @front_face = nil
+  end
+  attr_accessor :p, :normal, :t, :front_face
+
+  def set_face_normal(ray, outward_normal)
+    # Sets the hit record normal vector
+    # NOTE: the parameter outward_normal is assumed to have unit length
+
+    @front_face = VectorUtils.dot(ray.direction, outward_normal) < 0
+
+    # Our convention shall be that normals shall be pointing against the ray
+    @normal = @front_face ? outward_normal : -outward_normal
+  end
+end
+
 class Hittable
   include VectorUtils
 
@@ -36,7 +63,8 @@ class Sphere < Hittable
 
     hit_record.t = root
     hit_record.p = ray.at(root)
-    hit_record.normal = (hit_record.p - @center) / @radius
+    outward_normal = (hit_record.p - @center) / @radius
+    hit_record.set_face_normal(ray, outward_normal)
 
     true
   end
