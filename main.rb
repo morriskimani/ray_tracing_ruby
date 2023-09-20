@@ -4,24 +4,32 @@ require_relative './ray'
 
 extend VectorUtils
 
-# Determines whether a ray hits a given sphere (described by its center and radius)
+# Returns the point at which a ray hits a given sphere (described by its center and radius)
 #
 # @param [Point3] center
 # @param [Numeric] radius
 # @param [Ray] ray
-def hit_spere?(center, radius, ray)
+def hit_spere(center, radius, ray)
   oc = ray.origin - center
   a = dot(ray.direction, ray.direction)
   b = 2.0 * dot(oc, ray.direction)
   c = dot(oc, oc) - radius * radius
   discriminant = b * b - 4 * a * c
 
-  discriminant >= 0
+  return -1.0 if discriminant.negative?
+
+  # NOTE: we are only interested in the closest hit point (thus we are only getting one of the roots of the quadratic equation)
+  (-b - Math.sqrt(discriminant)) / (2.0 * a)
 end
 
 def ray_color(ray)
   sphere_center = Point3.new(0, 0, -1)
-  return Color.new(1, 0, 0) if hit_spere?(sphere_center, 0.5, ray)
+  hit_point = hit_spere(sphere_center, 0.5, ray)
+
+  if hit_point.positive?
+    normal = unit_vector(ray.at(hit_point) - sphere_center)
+    return Color.new(normal.x + 1, normal.y + 1, normal.z + 1) * 0.5
+  end
 
   unit_direction = unit_vector(ray.direction)
 
