@@ -4,7 +4,25 @@ require_relative './ray'
 
 extend VectorUtils
 
+# Determines whether a ray hits a given sphere (described by its center and radius)
+#
+# @param [Point3] center
+# @param [Numeric] radius
+# @param [Ray] ray
+def hit_spere?(center, radius, ray)
+  oc = ray.origin - center
+  a = dot(ray.direction, ray.direction)
+  b = 2.0 * dot(oc, ray.direction)
+  c = dot(oc, oc) - radius * radius
+  discriminant = b * b - 4 * a * c
+
+  discriminant >= 0
+end
+
 def ray_color(ray)
+  sphere_center = Point3.new(0, 0, -1)
+  return Color.new(1, 0, 0) if hit_spere?(sphere_center, 0.5, ray)
+
   unit_direction = unit_vector(ray.direction)
 
   # Calculate the alpha value "a" to be used in linear interpolation: (1-a) 𝚡 start + a 𝚡 end
@@ -38,8 +56,10 @@ pixel_delta_v = viewport_v / image_height
 viewport_upper_left = camera_center - Vec3.new(0, 0, focal_length) - viewport_u / 2 - viewport_v / 2
 pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5
 
+outfile = !ARGV.empty? ? "./output/#{ARGV.shift}.ppm" : './output/image.ppm'
+
 # Render
-File.open('image.ppm', 'w') do |file|
+File.open(outfile, 'w') do |file|
   file << "P3\n" << image_width << ' ' << image_height << "\n255\n"
 
   (0...image_height).each do |row|
@@ -54,4 +74,5 @@ File.open('image.ppm', 'w') do |file|
       ColorUtils.write_color(file, pixel_color)
     end
   end
+  puts "\nImage saved as: #{outfile}"
 end
