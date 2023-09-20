@@ -27,6 +27,13 @@ class HitRecord
     # Our convention shall be that normals shall be pointing against the ray
     @normal = @front_face ? outward_normal : -outward_normal
   end
+
+  def copy_state_from(other_record)
+    @p = other_record.p
+    @t = other_record.t
+    @normal = other_record.normal
+    @front_face = other_record.front_face
+  end
 end
 
 class Hittable

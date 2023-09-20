@@ -1,34 +1,16 @@
 require_relative './vec3'
 require_relative './color'
 require_relative './ray'
+require_relative './hittable'
+require_relative './hittable_list'
 
 extend VectorUtils
 
-# Returns the point at which a ray hits a given sphere (described by its center and radius)
-#
-# @param [Point3] center
-# @param [Numeric] radius
-# @param [Ray] ray
-def hit_spere(center, radius, ray)
-  oc = ray.origin - center
-  a = ray.direction.length_squared
-  half_b = dot(oc, ray.direction)
-  c = oc.length_squared - radius * radius
-  discriminant = half_b * half_b - a * c
 
-  return -1.0 if discriminant.negative?
-
-  # NOTE: we are only interested in the closest hit point (thus we are only getting one of the roots of the quadratic equation)
-  (-half_b - Math.sqrt(discriminant)) / a
-end
-
-def ray_color(ray)
-  sphere_center = Point3.new(0, 0, -1)
-  hit_point = hit_spere(sphere_center, 0.5, ray)
-
-  if hit_point.positive?
-    normal = unit_vector(ray.at(hit_point) - sphere_center)
-    return Color.new(normal.x + 1, normal.y + 1, normal.z + 1) * 0.5
+def ray_color(ray, world)
+  hit_record = HitRecord.new
+  if world.hit(ray, 0, Float::INFINITY, hit_record) # rubocop:disable Style/IfUnlessModifier
+    return (hit_record.normal + Color.new(1, 1, 1)) * 0.5
   end
 
   unit_direction = unit_vector(ray.direction)
@@ -44,6 +26,11 @@ aspect_ratio = 16.0 / 9.0
 image_width = 400
 image_height = (image_width / aspect_ratio).to_i
 image_height = image_height < 1 ? 1 : image_height
+
+# World
+world = HittableList.new
+world << Sphere.new(Point3.new(0, 0, -1), 0.5)
+world << Sphere.new(Point3.new(0, -100.5, -1), 100)
 
 # Camera
 focal_length = 1.0
@@ -78,7 +65,7 @@ File.open(outfile, 'w') do |file|
       ray_direction = pixel_center - camera_center
       ray = Ray.new(camera_center, ray_direction)
 
-      pixel_color = ray_color(ray)
+      pixel_color = ray_color(ray, world)
       ColorUtils.write_color(file, pixel_color)
     end
   end
