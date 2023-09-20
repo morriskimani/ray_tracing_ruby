@@ -37,7 +37,7 @@ class Vec3
   end
 
   def length
-    length_squared**0.5
+    Math.sqrt(length_squared)
   end
 
   def length_squared
@@ -80,4 +80,3 @@ module VectorUtils
     v / v.length
   end
 end
-
