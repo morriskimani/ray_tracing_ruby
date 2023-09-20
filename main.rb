@@ -3,6 +3,7 @@ require_relative './color'
 require_relative './ray'
 require_relative './hittable'
 require_relative './hittable_list'
+require_relative './sphere'
 
 extend VectorUtils
 
