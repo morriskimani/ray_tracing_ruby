@@ -1,8 +1,8 @@
 require_relative './vec3'
 
-HitRecord = Struct.new('HitRecord', p, normal, t)
-
 class HitRecord
+  include VectorUtils
+
   def initialize
     # the Ray vector. That is P(t) = A + tb, where the variable t is known and substituted in.
     @p = nil
@@ -22,7 +22,7 @@ class HitRecord
     # Sets the hit record normal vector
     # NOTE: the parameter outward_normal is assumed to have unit length
 
-    @front_face = VectorUtils.dot(ray.direction, outward_normal) < 0
+    @front_face = dot(ray.direction, outward_normal).negative?
 
     # Our convention shall be that normals shall be pointing against the ray
     @normal = @front_face ? outward_normal : -outward_normal
