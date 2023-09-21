@@ -6,10 +6,11 @@ class Camera
   include VectorUtils
 
   def initialize
-    @aspect_ratio = 16.0 / 9.0
+    @aspect_ratio = 16.0 / 9.0 # Ratio of image width to height
     @image_width = 400
+    @samples_per_pixel = 10 # count of random samples for each pixel
   end
-  attr_writer :aspect_ratio, :image_width
+  attr_accessor :aspect_ratio, :image_width, :samples_per_pixel
 
   def render(world)
     init
@@ -21,12 +22,13 @@ class Camera
         print("\rScanlines remaining:  #{@image_height - row} ")
 
         (0...@image_width).each do |col|
-          pixel_center = @pixel00_loc + (@pixel_delta_u * col) + (@pixel_delta_v * row)
-          ray_direction = pixel_center - @center
-          ray = Ray.new(@center, ray_direction)
+          pixel_color = Color.new(0, 0, 0)
+          @samples_per_pixel.times do
+            ray = get_ray(row, col)
+            pixel_color += ray_color(ray, world)
+          end
 
-          pixel_color = ray_color(ray, world)
-          ColorUtils.write_color(file, pixel_color)
+          ColorUtils.write_color(file, pixel_color, @samples_per_pixel)
         end
       end
       puts "\nImage saved as: #{outfile}"
@@ -74,6 +76,23 @@ class Camera
     # 0 <= a <= 1
     a = 0.5 * (unit_direction.y + 1)
     Color.new(1, 1, 1) * (1 - a) + Color.new(0.5, 0.7, 1.0) * a
+  end
+
+  def get_ray(row, col)
+    pixel_center = @pixel00_loc + (@pixel_delta_u * col) + (@pixel_delta_v * row)
+    pixel_sample = pixel_center + pixel_sample_square
+
+    ray_origin = @center
+    ray_direction = pixel_sample - ray_origin
+
+    Ray.new(ray_origin, ray_direction)
+  end
+
+  def pixel_sample_square
+    px = -0.5 + rand
+    py = -0.5 + rand
+
+    (@pixel_delta_u * px) + (@pixel_delta_v * py)
   end
 
   def outfile

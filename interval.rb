@@ -13,6 +13,10 @@ class Interval
     @min < value && value < @max
   end
 
+  def clamp(value)
+    value.clamp(min, max)
+  end
+
   EMPTY = new(Float::INFINITY, -Float::INFINITY)
   UNIVERSE = new(-Float::INFINITY, Float::INFINITY)
 end
