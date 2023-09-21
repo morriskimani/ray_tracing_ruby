@@ -9,8 +9,9 @@ class Camera
     @aspect_ratio = 16.0 / 9.0 # Ratio of image width to height
     @image_width = 400
     @samples_per_pixel = 10 # count of random samples for each pixel
+    @max_depth = 10 # maximum number of ray bounces onto a scene
   end
-  attr_accessor :aspect_ratio, :image_width, :samples_per_pixel
+  attr_accessor :aspect_ratio, :image_width, :samples_per_pixel, :max_depth
 
   def render(world)
     init
@@ -25,7 +26,7 @@ class Camera
           pixel_color = Color.new(0, 0, 0)
           @samples_per_pixel.times do
             ray = get_ray(row, col)
-            pixel_color += ray_color(ray, world)
+            pixel_color += ray_color(ray, @max_depth, world)
           end
 
           ColorUtils.write_color(file, pixel_color, @samples_per_pixel)
@@ -63,12 +64,15 @@ class Camera
     @pixel00_loc = @viewport_upper_left + (@pixel_delta_u + @pixel_delta_v) * 0.5
   end
 
-  def ray_color(ray, world)
+  def ray_color(ray, depth, world)
+    # Bounce limit exceeded. No more light is gathered
+    return Color.new(0, 0, 0) if depth <= 0
+
     hit_record = HitRecord.new
     ray_t = Interval.new(0, Float::INFINITY)
     if world.hit(ray, ray_t, hit_record)
       direction = random_on_hemisphere(hit_record.normal)
-      return ray_color(Ray.new(hit_record.p, direction), world) * 0.5
+      return ray_color(Ray.new(hit_record.p, direction), depth - 1, world) * 0.5
     end
 
     unit_direction = unit_vector(ray.direction)
