@@ -1,4 +1,13 @@
 class Vec3
+  class << self
+    def random(min = nil, max = nil)
+      return Vec3.new(rand, rand, rand) if min.nil? || max.nil?
+
+      clamped_rand = -> { min + (max - min) * rand }
+      Vec3.new(clamped_rand.call, clamped_rand.call, clamped_rand.call)
+    end
+  end
+
   def initialize(x = nil, y = nil, z = nil)
     @x = x || 0
     @y = y || 0
@@ -78,5 +87,24 @@ module VectorUtils
 
   def unit_vector(v)
     v / v.length
+  end
+
+  def random_unit_vector
+    unit_vector(random_in_unit_sphere)
+  end
+
+  # Generate a random vector inside a unit sphere
+  def random_in_unit_sphere
+    vector = Vec3.random
+    vector = Vec3.random until vector.length_squared < 1
+    vector
+  end
+
+  def random_on_hemisphere(normal)
+    generated_vector = random_unit_vector
+
+    return generated_vector if dot(generated_vector, normal).positive? # generated_vector on same hemisphere as normal
+
+    -generated_vector
   end
 end

@@ -66,8 +66,9 @@ class Camera
   def ray_color(ray, world)
     hit_record = HitRecord.new
     ray_t = Interval.new(0, Float::INFINITY)
-    if world.hit(ray, ray_t, hit_record) # rubocop:disable Style/IfUnlessModifier
-      return (hit_record.normal + Color.new(1, 1, 1)) * 0.5
+    if world.hit(ray, ray_t, hit_record)
+      direction = random_on_hemisphere(hit_record.normal)
+      return ray_color(Ray.new(hit_record.p, direction), world) * 0.5
     end
 
     unit_direction = unit_vector(ray.direction)
