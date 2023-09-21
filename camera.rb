@@ -77,6 +77,6 @@ class Camera
   end
 
   def outfile
-    !ARGV.empty? ? "./output/#{ARGV.shift}.ppm" : './output/image.ppm'
+    @outfile ||= !ARGV.empty? ? "./output/#{ARGV.shift}.ppm" : './output/image.ppm'
   end
 end
