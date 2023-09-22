@@ -69,7 +69,7 @@ class Camera
     return Color.new(0, 0, 0) if depth <= 0
 
     hit_record = HitRecord.new
-    ray_t = Interval.new(0, Float::INFINITY)
+    ray_t = Interval.new(0.001, Float::INFINITY)
     if world.hit(ray, ray_t, hit_record)
       direction = random_on_hemisphere(hit_record.normal)
       return ray_color(Ray.new(hit_record.p, direction), depth - 1, world) * 0.5
