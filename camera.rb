@@ -1,6 +1,7 @@
 require_relative './vec3'
 require_relative './color'
 require_relative './ray'
+require_relative './ppm_file'
 
 class Camera
   include VectorUtils
@@ -16,9 +17,8 @@ class Camera
   def render(world)
     init
 
-    File.open(outfile, 'w') do |file|
-      file << "P3\n" << @image_width << ' ' << @image_height << "\n255\n"
-
+    image_file = PpmFile.new(@image_width, @image_height, ARGV.shift)
+    image_file.save do |file|
       (0...@image_height).each do |row|
         print("\rScanlines remaining:  #{@image_height - row} ")
 
@@ -32,8 +32,9 @@ class Camera
           ColorUtils.write_color(file, pixel_color, @samples_per_pixel)
         end
       end
-      puts "\nImage saved as: #{outfile}"
     end
+
+    puts "\nImage saved as: #{image_file.file_name}"
   end
 
   private
@@ -98,9 +99,5 @@ class Camera
     py = -0.5 + rand
 
     (@pixel_delta_u * px) + (@pixel_delta_v * py)
-  end
-
-  def outfile
-    @outfile ||= !ARGV.empty? ? "./output/#{ARGV.shift}.ppm" : './output/image.ppm'
   end
 end
