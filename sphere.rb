@@ -1,7 +1,8 @@
 class Sphere < Hittable
-  def initialize(center, radius)
+  def initialize(center, radius, material)
     @center = center
     @radius = radius
+    @material = material
   end
 
   def hit(ray, ray_t, hit_record)
@@ -24,6 +25,7 @@ class Sphere < Hittable
 
     hit_record.t = root
     hit_record.p = ray.at(root)
+    hit_record.material = @material
     outward_normal = (hit_record.p - @center) / @radius
     hit_record.set_face_normal(ray, outward_normal)
 

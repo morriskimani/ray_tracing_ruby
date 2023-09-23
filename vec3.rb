@@ -58,6 +58,12 @@ class Vec3
     @x * @x + @y * @y + @z * @z
   end
 
+  # Returns true if vector is very close to zero in all dimensions
+  def near_zero?
+    s = 1e-8
+    (@x.abs < s) && (@y.abs < s) && (@z.abs < s)
+  end
+
   def to_s
     "#{@x} #{@y} #{@z}"
   end
@@ -101,5 +107,14 @@ module VectorUtils
     return generated_vector if dot(generated_vector, normal).positive? # generated_vector on same hemisphere as normal
 
     -generated_vector
+  end
+
+  # Get the direction of reflection
+  # @param incident_direction [Vec3] A vector indicating the direction of the incident ray
+  # @param normal [Vec3] The normal vector at the point of incidence
+  # @return [Vec3]
+  def reflect(incident_direction, normal)
+    # TODO: I don't understanf this formula... read up on vectors
+    incident_direction - normal * dot(incident_direction, normal) * 2
   end
 end

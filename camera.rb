@@ -2,6 +2,7 @@ require_relative './vec3'
 require_relative './color'
 require_relative './ray'
 require_relative './ppm_file'
+require_relative './material'
 
 class Camera
   include VectorUtils
@@ -72,8 +73,10 @@ class Camera
     hit_record = HitRecord.new
     ray_t = Interval.new(0.001, Float::INFINITY)
     if world.hit(ray, ray_t, hit_record)
-      direction = hit_record.normal + random_unit_vector
-      return ray_color(Ray.new(hit_record.p, direction), depth - 1, world) * 0.5
+      scatter_rec = hit_record.material.scatter(ray, hit_record)
+      return Color.new(0, 0, 0) unless scatter_rec.is_scattered
+
+      return scatter_rec.attenuation * ray_color(scatter_rec.scattered_ray, depth - 1, world)
     end
 
     unit_direction = unit_vector(ray.direction)

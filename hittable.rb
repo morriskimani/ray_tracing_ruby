@@ -8,6 +8,9 @@ class HitRecord
     # the Ray vector. That is P(t) = A + tb, where the variable t is known and substituted in.
     @p = nil
 
+    # the material of the object that was hit by the ray
+    @material = nil
+
     # value at which the ray function hits the hittable object/surface. That is, the t in P(t) = A + tb
     @t = nil
 
@@ -17,7 +20,7 @@ class HitRecord
     # True if ray is hitting object from the front side.
     @front_face = nil
   end
-  attr_accessor :p, :normal, :t, :front_face
+  attr_accessor :p, :normal, :t, :front_face, :material
 
   def set_face_normal(ray, outward_normal)
     # Sets the hit record normal vector
@@ -34,6 +37,7 @@ class HitRecord
     @t = other_record.t
     @normal = other_record.normal
     @front_face = other_record.front_face
+    @material = other_record.material
   end
 end
 
