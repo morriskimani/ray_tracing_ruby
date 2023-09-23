@@ -18,9 +18,9 @@ class Vec3
   def +(other)
     case other
     in Numeric
-      add_num(other)
+      Vec3.new(@x + other, @y + other, @z + other)
     in Vec3
-      add_other(other)
+      Vec3.new(@x + other.x, @y + other.y, @z + other.z)
     else
       raise TypeError, "Expected Numeric or #{self.class}, got #{other.class}"
     end
@@ -60,16 +60,6 @@ class Vec3
 
   def to_s
     "#{@x} #{@y} #{@z}"
-  end
-
-  private
-
-  def add_num(num)
-    Vec3.new(@x + num, @y + num, @z + num)
-  end
-
-  def add_other(other)
-    Vec3.new(@x + other.x, @y + other.y, @z + other.z)
   end
 end
 
