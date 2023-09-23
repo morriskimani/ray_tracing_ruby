@@ -36,9 +36,14 @@ class Vec3
   end
 
   def *(other)
-    raise TypeError, "Expected a Numeric val, got #{other.class}" unless other.is_a? Numeric
-
-    Vec3.new(@x * other, @y * other, @z * other)
+    case other
+    in Numeric
+      Vec3.new(@x * other, @y * other, @z * other)
+    in Vec3
+      Vec3.new(@x * other.x, @y * other.y, @z * other.z)
+    else
+      raise TypeError, "Expected Numeric or #{self.class}, got #{other.class}"
+    end
   end
 
   def /(other)
