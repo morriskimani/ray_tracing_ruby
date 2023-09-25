@@ -25,6 +25,11 @@ class HittableList < Hittable
 
       hit_anything = true
       closest_so_far = temp_rec.t
+
+      # TODO: this looks like a dirty hack.
+      # only doing this to match the C++ tutorial where they pass in a pointer.
+      # Rather than pass in a HitRecord whose state we modify,
+      # Can we have the #hit method return a HitRecord if there was a hit?
       hit_record.copy_state_from(temp_rec)
     end
 
