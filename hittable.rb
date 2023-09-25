@@ -46,7 +46,14 @@ end
 class Hittable
   include VectorUtils
 
-  def hit
+  # Returns true if the provided ray strikes the Hittable object.
+  # It also adds information about the "hit" to the passed in hit_record
+  #
+  # @param ray [Ray]
+  # @param ray_t [Interval]
+  # @param hit_record [HitRecord]
+  # @return [Boolean]
+  def hit(ray, ray_t, hit_record)
     raise NotImplementedError
   end
 end
