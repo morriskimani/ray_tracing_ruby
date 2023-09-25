@@ -15,7 +15,7 @@ module ColorUtils
       g *= scale
       b *= scale
 
-      # Apply linear to gamma transform
+      # Apply linear to gamma transform 
       r = linear_to_gamma(r)
       g = linear_to_gamma(g)
       b = linear_to_gamma(b)

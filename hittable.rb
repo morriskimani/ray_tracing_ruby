@@ -1,20 +1,21 @@
 require_relative './vec3'
 require_relative './interval'
 
+# Encapsulates information about a HIT (i.e. a ray striking an object)
 class HitRecord
   include VectorUtils
 
   def initialize
-    # the Ray vector. That is P(t) = A + tb, where the variable t is known and substituted in.
+    # the Ray vector at the point of incidence. That is, P(t) = A + tb where t is known
     @p = nil
 
     # the material of the object that was hit by the ray
     @material = nil
 
-    # value at which the ray function hits the hittable object/surface. That is, the t in P(t) = A + tb
+    # value at which the ray hits the hittable object/surface. That is, the t in P(t) = A + tb
     @t = nil
 
-    # Normal Vector passing through the intersection point of the ray and the object
+    # Normal Vector passing through the point of incidence
     @normal = nil
 
     # True if ray is hitting object from the front side.
@@ -41,6 +42,7 @@ class HitRecord
   end
 end
 
+# @bstract Any object that can be "hit" subclasses Hittabble and implements #hit
 class Hittable
   include VectorUtils
 

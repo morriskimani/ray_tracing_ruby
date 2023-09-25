@@ -1,6 +1,7 @@
 require_relative './hittable'
 require_relative './interval'
 
+# A list of hittable objects
 class HittableList < Hittable
   def initialize(object = nil) # rubocop:disable Lint/MissingSuper
     @objects = object ? [object] : []
