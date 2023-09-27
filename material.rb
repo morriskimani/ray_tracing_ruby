@@ -81,10 +81,10 @@ class Dielectric < Material
     refraction_ratio = hit_record.front_face ? (1.0 / @refractive_index) : @refractive_index
     unit_direction = unit_vector(r_in.direction)
     cos_theta = [dot(-unit_direction, hit_record.normal), 1.0].min
-    sin_theta = Math.sqrt(1 - cos_theta*cos_theta)
+    sin_theta = Math.sqrt(1 - cos_theta * cos_theta)
     cannot_refract = refraction_ratio * sin_theta > 1
 
-    direction = if cannot_refract
+    direction = if cannot_refract || reflectance(cos_theta, refraction_ratio) > rand
                   reflect(unit_direction, hit_record.normal) # Total internal reflection
                 else
                   refract(unit_direction, hit_record.normal, refraction_ratio)
@@ -95,5 +95,14 @@ class Dielectric < Material
     scatter_record.is_scattered = true
 
     scatter_record
+  end
+
+  private
+
+  # Use Schlick's approximation for reflectance: https://en.wikipedia.org/wiki/Schlick%27s_approximation
+  def reflectance(cosine, ref_idx)
+    r0 = (1 - ref_idx) / (1 + ref_idx)
+    r0 *= r0
+    r0 + (1 - r0) * ((1 - cosine)**5)
   end
 end
