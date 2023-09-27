@@ -53,17 +53,18 @@ end
 
 # Models materials that have polished surfaces
 class Metal < Material
-  def initialize(albedo)
+  def initialize(albedo, fuzz)
     super
     @albedo = albedo
+    @fuzz = fuzz < 1 ? fuzz : 1
   end
 
   def scatter(r_in, hit_record)
     reflected = reflect(unit_vector(r_in.direction), hit_record.normal)
 
-    scatter_record.scattered_ray = Ray.new(hit_record.p, reflected)
+    scatter_record.scattered_ray = Ray.new(hit_record.p, reflected + random_unit_vector * @fuzz)
     scatter_record.attenuation = @albedo
-    scatter_record.is_scattered = true
+    scatter_record.is_scattered = dot(scatter_record.scattered_ray.direction, hit_record.normal).positive?
 
     scatter_record
   end
