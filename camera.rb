@@ -12,8 +12,9 @@ class Camera
     @image_width = 400
     @samples_per_pixel = 10 # count of random samples for each pixel
     @max_depth = 10 # maximum number of ray bounces onto a scene
+    @vertical_fov = 90 # Vertical field of view (in degrees)
   end
-  attr_accessor :aspect_ratio, :image_width, :samples_per_pixel, :max_depth
+  attr_accessor :aspect_ratio, :image_width, :samples_per_pixel, :max_depth, :vertical_fov
 
   def render(world)
     init
@@ -49,7 +50,9 @@ class Camera
 
     # Viewport Dimensions
     @focal_length = 1.0
-    @viewport_height = 2.0
+    theta = degrees_to_radians(@vertical_fov)
+    @viewport_height = 2 * Math.tan(theta / 2) * @focal_length
+
     # Note we are not using the @aspect_ratio value directly,
     # because the actual aspect ratio of the image may be slightly different.
     @viewport_width = @viewport_height * @image_width.to_f / @image_height
@@ -103,4 +106,8 @@ class Camera
 
     (@pixel_delta_u * px) + (@pixel_delta_v * py)
   end
+end
+
+def degrees_to_radians(degrees)
+  degrees * (Math::PI / 180)
 end
