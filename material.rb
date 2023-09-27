@@ -69,3 +69,23 @@ class Metal < Material
     scatter_record
   end
 end
+
+# Models a dielectric material
+class Dielectric < Material
+  def initialize(refractive_index)
+    super
+    @refractive_index = refractive_index
+  end
+
+  def scatter(r_in, hit_record)
+    refraction_ratio = hit_record.front_face ? (1.0 / @refractive_index) : @refractive_index
+    unit_direction = unit_vector(r_in.direction)
+    refracted = refract(unit_direction, hit_record.normal, refraction_ratio)
+
+    scatter_record.scattered_ray = Ray.new(hit_record.p, refracted)
+    scatter_record.attenuation = Color.new(1, 1, 1)
+    scatter_record.is_scattered = true
+
+    scatter_record
+  end
+end

@@ -117,4 +117,18 @@ module VectorUtils
     # TODO: I don't understanf this formula... read up on vectors
     incident_direction - normal * dot(incident_direction, normal) * 2
   end
+
+  # Refract a ray
+  #
+  # @param incident [Vec3] unit vector indicating direction of incident ray
+  # @param normal [Vec3] unit vector normal to the surface at the point of incidence
+  # @param etai_over_etat [Numeric] the ratio of refractive indices of the incident and refracted media i.e. ηᵢ/ηₜ
+  # @return [Vec3] unit vector indicating the direction of refraction
+  def refract(incident, normal, etai_over_etat)
+    cos_theta = [dot(-incident, normal), 1.0].min
+    r_out_perpendicular = (incident + normal * cos_theta) * etai_over_etat
+    r_out_parallel = normal * -Math.sqrt((1 - r_out_perpendicular.length_squared).abs)
+
+    r_out_perpendicular + r_out_parallel
+  end
 end
