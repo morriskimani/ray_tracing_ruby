@@ -80,9 +80,17 @@ class Dielectric < Material
   def scatter(r_in, hit_record)
     refraction_ratio = hit_record.front_face ? (1.0 / @refractive_index) : @refractive_index
     unit_direction = unit_vector(r_in.direction)
-    refracted = refract(unit_direction, hit_record.normal, refraction_ratio)
+    cos_theta = [dot(-unit_direction, hit_record.normal), 1.0].min
+    sin_theta = Math.sqrt(1 - cos_theta*cos_theta)
+    cannot_refract = refraction_ratio * sin_theta > 1
 
-    scatter_record.scattered_ray = Ray.new(hit_record.p, refracted)
+    direction = if cannot_refract
+                  reflect(unit_direction, hit_record.normal) # Total internal reflection
+                else
+                  refract(unit_direction, hit_record.normal, refraction_ratio)
+                end
+
+    scatter_record.scattered_ray = Ray.new(hit_record.p, direction)
     scatter_record.attenuation = Color.new(1, 1, 1)
     scatter_record.is_scattered = true
 
